@@ -1,5 +1,7 @@
 var frequencymap=[];
 var noise2= [];
+var cutoffthresh = 1.1;
+var localthresh = 3.4;
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -10,7 +12,7 @@ function setup() {
 
    mic = new p5.AudioIn();
    mic.start();
-   fft = new p5.FFT(0.5, 8192);
+   fft = new p5.FFT(0.8, 8192);
    fft.setInput(mic);
    var a = 440;
    for (var x = 0; x < 127; x++)
@@ -40,14 +42,24 @@ function draw() {
    background(200);
    var out = document.getElementById('output');
    var spectrum = findNotes();
+   var avg = 0;
    for (var x = 0; x<spectrum.length;x++){
 	   spectrum[x] = spectrum[x]-noise2[x]<0 ? 0:spectrum[x]-noise2[x];
+	   avg += spectrum[x];
    }
+   avg /= spectrum.length;
+   avg = Math.max(avg,50);
    //console.log(spectrum);
    out.innerHTML = spectrum.length;
    beginShape();
    for (i = 0; i<spectrum.length; i++) {
-    vertex(5*i, map(spectrum[i], 0, 255, height, 0) );
+	var specval
+	 if (spectrum[i]>cutoffthresh*avg || (i>1&&i<spectrum.length-2&& spectrum[i]> localthresh*(spectrum[i-1]+spectrum[i-2]+spectrum[i+1]+spectrum[i+2])/4)) {
+		 specval = spectrum[i];
+	 } else {
+		 specval = 0.5*spectrum[i];
+	 }
+    vertex(5*i, map(specval, 0, 255, height, 0) );
    }
    endShape();
 }
