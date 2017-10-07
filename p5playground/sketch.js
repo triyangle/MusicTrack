@@ -4,13 +4,13 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function setup() {
+function setup() {
    createCanvas(710,400);
    noFill();
 
    mic = new p5.AudioIn();
    mic.start();
-   fft = new p5.FFT(0.8, 4096);
+   fft = new p5.FFT(0.5, 8192);
    fft.setInput(mic);
    var a = 440;
    for (var x = 0; x < 127; x++)
@@ -18,7 +18,7 @@ async function setup() {
 	   frequencymap.push((a / 32) * (Math.pow(2, ((x - 9) / 12))));
 	}
 	console.log(frequencymap);
-	
+	sampleNoise();
 }
 
 async function sampleNoise() {
@@ -41,7 +41,7 @@ function draw() {
    var out = document.getElementById('output');
    var spectrum = findNotes();
    for (var x = 0; x<spectrum.length;x++){
-	   spectrum[x] = spectrum[x]-noise2[x];
+	   spectrum[x] = spectrum[x]-noise2[x]<0 ? 0:spectrum[x]-noise2[x];
    }
    //console.log(spectrum);
    out.innerHTML = spectrum.length;
