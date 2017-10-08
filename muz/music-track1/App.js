@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import { 
   AppRegistry,
   Dimensions,
-  Font, 
+  Font,
   Image,
   ScrollView,
   SectionList,
-  StyleSheet, 
-  Text, 
-  View 
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 
 import { Accidental } from 'vexflow/src/accidental';
@@ -813,7 +813,7 @@ class HomeScreen extends React.Component {
             style={{borderWidth: 3, borderColor: '#deb887'}}
             title='GET STARTED' />
           <Text style={styles.footerLandingPage}> 🦆TapTheDuck Inc. </Text>
-        </LinearGradient>        
+        </LinearGradient>
       </View>
     );
   }
@@ -873,14 +873,14 @@ class TrackScreen extends React.Component {
           color="#7fffd4"
           icon={{name: 'plus', type: 'font-awesome'}}
           style={{borderWidth: 3, borderColor: '#5f9ea0'}}
-          title='ADD TRACK' 
+          title='ADD TRACK'
         />
         <Button
         color="#7fffd4"
           icon={{name: 'minus', type: 'font-awesome'}}
           style={{borderWidth: 3, borderColor: '#5f9ea0'}}
-          title='DELETE TRACK' 
-        /> 
+          title='DELETE TRACK'
+        />
         <LinearGradient
           colors={['skyblue', 'steelblue', 'powderblue']}
           style={{ height: height, width: width, alignItems: 'center', justifyContent: 'center', borderRadius: 10 }}
