@@ -37,14 +37,15 @@ def getMusicProperties(x):
 
 
 print('pitch, duration_string, duration, tie, midi pitch, octave')
-for a in song.recurse().notes:
+for a in song.recurse(classFilter=('Note', 'Rest')):
+    if a.isRest:
+        print(a.fullName + ", " + str(a.duration.type) + ", " + str(a.duration.quarterLength))
 
-    if (a.isNote):
-        x = a;
-        s = getMusicProperties(x);
+    if a.isNote:
+        s = getMusicProperties(a);
         print(s);
 
-    if (a.isChord):
+    if a.isChord:
         print("Starting Chord")
         for x in a._notes:
             s = getMusicProperties(x);
@@ -54,10 +55,9 @@ for a in song.recurse().notes:
 print("Done.")
 
 for x in song.recurse().notes:
-    if (x.isNote):
+    if x.isNote:
         print(x.pitch, x.duration.type, x.duration.quarterLength, x.tie, x.octave, x.quarterLength)    #x.seconds not always there
 
-    if (x.isChord):
+    if x.isChord:
         for a in x._notes:
             print(a.pitch, a.duration.type, a.duration.quarterLength, a.tie, a.octave, a.quarterLength)
-
