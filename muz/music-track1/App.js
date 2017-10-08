@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { 
+import {
   AppRegistry,
   Dimensions,
   Font,
@@ -835,13 +835,13 @@ class TrackScreen extends React.Component {
       sumLen += tempData.duration;
       indexTemp += 1;
       if (tempData.midi > 500) {
-        notes.push(new StaveNote({clef: "treble", keys: [tempData.pitch[0] + "/" + String(tempData.octave)], duration: tempData.duration_string + "r"}))        
+        notes.push(new StaveNote({clef: "treble", keys: [tempData.pitch[0] + "/" + String(tempData.octave)], duration: tempData.duration_string + "r"}))
       } else if (tempData.pitch.length > 2) {
-        notes.push(new StaveNote({clef: "treble", keys: [tempData.pitch[0] + "/" + String(tempData.octave)], duration: tempData.duration_string}).addAccidental(0, new Accidental("#")))                
+        notes.push(new StaveNote({clef: "treble", keys: [tempData.pitch[0] + "/" + String(tempData.octave)], duration: tempData.duration_string}).addAccidental(0, new Accidental("#")))
       } else {
-        notes.push(new StaveNote({clef: "treble", keys: [tempData.pitch[0] + "/" + String(tempData.octave)], duration: tempData.duration_string}))        
+        notes.push(new StaveNote({clef: "treble", keys: [tempData.pitch[0] + "/" + String(tempData.octave)], duration: tempData.duration_string}))
       }
-    } 
+    }
 
     const voice = new Voice({num_beats: 4,  beat_value: 4});
     voice.addTickables(notes);
@@ -849,7 +849,7 @@ class TrackScreen extends React.Component {
     const formatter = new Formatter().joinVoices([voice]).formatToStave([voice], stave);
     voice.draw(context, stave);
   }
-  
+
   getDataToPresent(progress, context) {
     // call runVexFlowCode three times with different value
       if (progress <= 76 - 2) {
@@ -885,8 +885,8 @@ class TrackScreen extends React.Component {
           colors={['skyblue', 'steelblue', 'powderblue']}
           style={{ height: height, width: width, alignItems: 'center', justifyContent: 'center', borderRadius: 10 }}
         >
-        <View> 
-          {context.render()} 
+        <View>
+          {context.render()}
         </View>
         </LinearGradient>
       </View>
