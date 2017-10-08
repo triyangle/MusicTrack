@@ -45,9 +45,11 @@ for a in song.recurse().notes:
         print(s);
 
     if (a.isChord):
+        print("Starting Chord")
         for x in a._notes:
             s = getMusicProperties(x);
             print(s);
+        print("Ending Chord")
 
 print("Done.")
 
