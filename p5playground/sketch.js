@@ -54,6 +54,7 @@ async function sampleNoise() {
 function draw() {
    background(200);
    var out = document.getElementById('output');
+   var out2 = document.getElementById('output2');
    var spectrum = findNotes();
    var avg = 0;
    for (var x = 0; x<NoteNum;x++){
@@ -68,8 +69,8 @@ function draw() {
 	var specval
 	 //if (spectrum[i]>cutoffthresh*avg || (avg>MinAvg&&i>1&&i<NoteNum-2&& spectrum[i]> localthresh*(spectrum[i-2]+spectrum[i+2])/2)) {
 	if ((spectrum[i]>cutoffthresh*avg || (avg>MinAvg&&i>1&&i<NoteNum-2&& spectrum[i]> localthresh*(spectrum[i-2]+spectrum[i+2])/2))
-			&& !(i>0&&i<NoteNum-1&& (1.25*spectrum[i]<spectrum[i-1]||1.25*spectrum[i]<spectrum[i+1]))) {
-		 specval = spectrum[i];
+			&& !(i>0&&i<NoteNum-1&& (1.2*spectrum[i]<spectrum[i-1]||1.2*spectrum[i]<spectrum[i+1]))) {
+		 specval = 1.1*spectrum[i];
 		 if (notes[i]<noteupperbuffer) {
 			notes[i] += 1;
 		 } 
@@ -94,19 +95,38 @@ function draw() {
     vertex(5*i, map(specval, 0, 255, height, 0) );
 	lastspectrum[i] = specval;
    }
-   out.innerHTML = getActiveNotes();
+   out.innerHTML = getActiveNotesString();
+   out2.innerHTML = getNotesByEnergyString();
    endShape();
 }
 
 function getActiveNotes() {
-	var notelist=":";
+	var notelist=[];
 	for (var note in notes) {
 		var val = notes[note];
 		if(val>notelowerbuffer) {
-			notelist += note + ",";
+			notelist.push(note);
 		}
 	}
 	return notelist;
+}
+
+function getNotesByEnergy() {
+	var pairs = [];
+	var active = getActiveNotes();
+	for (var i=0; i<active.length;i++){
+		var temp = active[i];
+		pairs.push([temp,lastspectrum[temp]]);
+	}
+	return pairs.sort(function(x) {return x[1]});
+}
+
+function getActiveNotesString() {
+	return ":"+getActiveNotes();
+}
+
+function getNotesByEnergyString() {
+	return ":"+getNotesByEnergy();
 }
 
 function findNotes() {
