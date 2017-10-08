@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 
 //designates which three/four lines gets to present
-var progress = 10;
-var indexTemp = 10;
+var progress = 0;
+var indexTemp = 0;
 
 // var wrapper = fetch('../data/data.json');
 // const count = Object.keys(wrapper).length;
