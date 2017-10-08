@@ -1,15 +1,16 @@
 var frequencymap=[];
 var noise2= [];
-var cutoffthresh = 1.1;
-var localthresh = 1.55;
-var noteupperbuffer = 6;
-var notelowerbuffer = 3;
+var lastspectrum= [];
+var cutoffthresh = 1.15;
+var localthresh = 1.6;
+var noteupperbuffer = 4;
+var notelowerbuffer = 2;
 var fftsmooth = 0.8;
-var fftsamples = 8192;
+var fftsamples = 4096;
 var notes = {};
 var Afreq = 440;//hz
 var NoteNum = 127;
-var MinAvg = 50;
+var MinAvg = 60;
 var NoiseSamples = 100;
 var NoiseReduction = 0.75;//0.0-1.0
 function sleep(ms) {
@@ -31,6 +32,7 @@ function setup() {
 	   notes[x] = 0;
 	}
 	console.log(frequencymap);
+	lastspectrum = findNotes();
 	sampleNoise();
 }
 
@@ -62,27 +64,42 @@ function draw() {
    avg = Math.max(avg,MinAvg);
    //console.log(spectrum);
    beginShape();
-   for (i = 0; i<NoteNum; i++) {
+   for (i = 20; i<NoteNum; i++) {
 	var specval
-	 if (spectrum[i]>cutoffthresh*avg || (avg>MinAvg&&i>1&&i<NoteNum-2&& spectrum[i]> localthresh*(spectrum[i-2]+spectrum[i+2])/2)) {
+	 //if (spectrum[i]>cutoffthresh*avg || (avg>MinAvg&&i>1&&i<NoteNum-2&& spectrum[i]> localthresh*(spectrum[i-2]+spectrum[i+2])/2)) {
+	if ((spectrum[i]>cutoffthresh*avg || (avg>MinAvg&&i>1&&i<NoteNum-2&& spectrum[i]> localthresh*(spectrum[i-2]+spectrum[i+2])/2))
+			&& !(i>0&&i<NoteNum-1&& (1.25*spectrum[i]<spectrum[i-1]||1.25*spectrum[i]<spectrum[i+1]))) {
 		 specval = spectrum[i];
 		 if (notes[i]<noteupperbuffer) {
 			notes[i] += 1;
-		 }
+		 } 
+		 //if (notes[i]>notelowerbuffer){
+			 var ratio = Math.min(avg/specval,0.9);
+			 var blyat = 12;
+			 for (var noharm=i+blyat;blyat>2&&noharm<NoteNum-1; noharm+=blyat) {
+				 spectrum[noharm]*=ratio;
+				 spectrum[noharm-1]*=ratio;
+				 spectrum[noharm+1]*=ratio;
+				 blyat = Math.ceil(blyat/2);
+			 } 
+		 //}
 	 } else {
-		 specval = 0.5*spectrum[i];
+		 specval = 0.4*spectrum[i];
 		 if (notes[i]>0) {
-			notes[i] -= 1;
+			notes[i] -= 2;
 		 }
 	 }
+	 //var specfrac = fftsmooth*(i/NoteNum);
+	 specval = fftsmooth*lastspectrum[i]+(1-fftsmooth)*specval;
     vertex(5*i, map(specval, 0, 255, height, 0) );
+	lastspectrum[i] = specval;
    }
    out.innerHTML = getActiveNotes();
    endShape();
 }
 
 function getActiveNotes() {
-	var notelist="";
+	var notelist=":";
 	for (var note in notes) {
 		var val = notes[note];
 		if(val>notelowerbuffer) {
