@@ -13,15 +13,15 @@ var NoteNum = 127;
 var MinAvg = 60;
 var NoiseSamples = 100;
 var NoiseReduction = 0.75;//0.0-1.0
+var EONTimeout = 3;//>n seconds because processes pitches
+var EONThreshold = 0.2; //between 0 and 1
+var EONSmooth = 0.3;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function setup() {
-   createCanvas(710,400);
-   noFill();
-
    mic = new p5.AudioIn();
    mic.start();
    fft = new p5.FFT(fftsmooth, fftsamples);
@@ -52,20 +52,16 @@ async function sampleNoise() {
 	noise2 = noise2.map(function(x) {return x/(NoiseSamples*NoiseReduction)});
 }
 
-function draw() {
-   background(200);
-   var out = document.getElementById('output');
-   var out2 = document.getElementById('output2');
+async function recordPitches() {
+   //background(200);
    var spectrum = findNotes();
    var avg = 0;
    for (var x = 0; x<NoteNum;x++){
 	   spectrum[x] = spectrum[x]-noise2[x]<0 ? 0:spectrum[x]-noise2[x];
 	   avg += spectrum[x];
    }
-   avg /= spectrum.length;
+   avg /= NoteNum;
    avg = Math.max(avg,MinAvg);
-   //console.log(spectrum);
-   beginShape();
    for (i = 20; i<NoteNum; i++) {
 	var specval
 	 //if (spectrum[i]>cutoffthresh*avg || (avg>MinAvg&&i>1&&i<NoteNum-2&& spectrum[i]> localthresh*(spectrum[i-2]+spectrum[i+2])/2)) {
@@ -75,30 +71,36 @@ function draw() {
 		 if (notes[i]<noteupperbuffer) {
 			notes[i] += 1;
 		 } 
-		 //if (notes[i]>notelowerbuffer){
-			 var ratio = Math.min(avg/specval,0.9);
-			 var blyat = 12;
-			 for (var noharm=i+blyat;blyat>2&&noharm<NoteNum-1; noharm+=blyat) {
-				 spectrum[noharm]*=ratio;
-				 spectrum[noharm-1]*=ratio;
-				 spectrum[noharm+1]*=ratio;
-				 blyat = Math.ceil(blyat/2);
-			 } 
-		 //}
+		 var ratio = Math.min(avg/specval,0.9);
+		 var blyat = 12;
+		 for (var noharm=i+blyat;blyat>2&&noharm<NoteNum-1; noharm+=blyat) {
+			 spectrum[noharm]*=ratio;
+			 spectrum[noharm-1]*=ratio;
+			 spectrum[noharm+1]*=ratio;
+			 blyat = Math.ceil(blyat/2);
+		 } 
 	 } else {
 		 specval = 0.4*spectrum[i];
 		 if (notes[i]>0) {
 			notes[i] -= 2;
 		 }
 	 }
-	 //var specfrac = fftsmooth*(i/NoteNum);
-	 specval = fftsmooth*lastspectrum[i]+(1-fftsmooth)*specval;
-    vertex(5*i, map(specval, 0, 255, height, 0) );
-	lastspectrum[i] = specval;
+	lastspectrum[i] = fftsmooth*lastspectrum[i]+(1-fftsmooth)*specval;
    }
-   out.innerHTML = getActiveNotesString();
-   out2.innerHTML = getNotesByEnergyString();
-   endShape();
+}
+
+async function findEndOfNote() {
+	var counter = 0;
+	var last = mic.getLevel();
+	while (counter<EONTimeout*100) {
+		await sleep(10);
+		if (Math.abs(mic.getLevel(EONSmooth)-last)>EONThreshold) {
+			return 1;
+		}
+		getActiveNotes()
+		getNotesByEnergy()
+	}
+	return 0;
 }
 
 function getActiveNotes() {
@@ -121,8 +123,6 @@ function getNotesByEnergy() {
 	}
 	return pairs.sort(function(x) {return x[1]});
 }
-
-
 
 function getActiveNotesString() {
 	return ":"+getActiveNotes();
