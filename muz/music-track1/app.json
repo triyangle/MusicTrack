@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "music-track1",
-    "description": "An empty new project",
+    "description": "An application that helps you practice playing the piano by scrolling through the music as you play.",
     "slug": "music-track1",
     "privacy": "public",
     "sdkVersion": "21.0.0",

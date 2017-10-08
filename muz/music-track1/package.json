@@ -6,12 +6,16 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
+    "audio-analyser": "^1.0.2",
     "expo": "^21.0.0",
+    "os": "^0.1.1",
+    "p5": "^0.5.14",
     "react": "16.0.0-alpha.12",
     "react-native": "https://github.com/expo/react-native/archive/sdk-21.0.2.tar.gz",
     "react-native-action-button": "^2.8.0",
     "react-native-elements": "^0.17.0",
     "react-native-vector-icons": "^4.4.1",
-    "react-navigation": "^1.0.0-beta.13"
+    "react-navigation": "^1.0.0-beta.13",
+    "stream": "0.0.2"
   }
 }
