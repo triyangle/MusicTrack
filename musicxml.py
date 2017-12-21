@@ -28,11 +28,11 @@ def getMusicProperties(x):
     s = '';
     t = '';
     pitch = str(x.pitch)
-    s = str(octave_to_midi(pitch[:-1], pitch[-1])) + ", " + str(x.pitch) + ", " + str(x.duration.type) + ", " + str(x.duration.quarterLength);
+    s = str(octave_to_midi(pitch[:-1], pitch[-1])) + ", " + str(x.pitch) + ", " + str(x.duration.type) + ", " + str(x.duration.quarterLength)
     s += ", "
     if x.tie != None:
         t = x.tie.type;
-    s += t + ", " + str(x.pitch.ps) + ", " + str(x.octave); # + str(x.seconds)  # x.seconds not always there
+    s += t + ", " + str(x.pitch.ps) + ", " + str(x.octave) # + str(x.seconds)  # x.seconds not always there
     return s
 
 
